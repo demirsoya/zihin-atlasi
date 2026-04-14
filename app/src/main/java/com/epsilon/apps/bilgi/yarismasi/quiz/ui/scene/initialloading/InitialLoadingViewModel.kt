@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.epsilon.apps.bilgi.yarismasi.quiz.room.AppDatabase
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.scene.initialloading.cases.LoadQuestionsCase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,22 +37,29 @@ class InitialLoadingViewModel(
 
     sealed class InitialLoadingUiState {
         data class Loaded(
-            val a: Int
+            val progress: Float
         ) : InitialLoadingUiState()
 
-        data object Loading : InitialLoadingUiState()
+        data class Loading(
+            val progress: Float
+        ) : InitialLoadingUiState()
+
         data object Error : InitialLoadingUiState()
     }
 
-    private val mUiState = MutableStateFlow<InitialLoadingUiState>(InitialLoadingUiState.Loading)
+    private val mUiState = MutableStateFlow<InitialLoadingUiState>(InitialLoadingUiState.Loading(progress = 0f))
     val initialLoadingUiState: StateFlow<InitialLoadingUiState> = mUiState.asStateFlow()
 
     init {
         viewModelScope.launch {
             runCatching {
-                loadQuestionsCase.execute()
+                delay(3000)
+                loadQuestionsCase.execute { processedQuestions, totalQuestions ->
+                    val progress = if (totalQuestions <= 0) 1f else processedQuestions.toFloat() / totalQuestions.toFloat()
+                    mUiState.value = InitialLoadingUiState.Loading(progress = progress.coerceIn(0f, 1f))
+                }
             }.onSuccess {
-                mUiState.value = InitialLoadingUiState.Loaded(a = 1)
+                mUiState.value = InitialLoadingUiState.Loaded(progress = 1f)
             }.onFailure {
                 mUiState.value = InitialLoadingUiState.Error
             }

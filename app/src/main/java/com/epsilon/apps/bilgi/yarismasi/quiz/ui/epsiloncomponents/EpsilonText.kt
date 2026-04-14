@@ -17,7 +17,7 @@ fun EpsilonText(
     modifier: Modifier = Modifier,
     text: String,
     size: TextUnit = 20.nonScaledSp,
-    textColor: Int = R.color.black,
+    textColor: Int = R.color.app_black,
     textAlign: TextAlign = TextAlign.Center,
     fontWeight: FontWeight = FontWeight.Normal,
     lineHeight: TextUnit = size,

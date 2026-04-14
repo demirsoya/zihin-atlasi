@@ -19,9 +19,6 @@ fun NavigationGraph(
     appDatabase: AppDatabase,
     edgeToEdgePadding: PaddingValues,
     assetManager: AssetManager
-    //preferencesManager: PreferencesManager,
-    //adManager: GameAdManager?,
-    //inAppPurchaseManager: InAppPurchaseManager?
 ) {
     NavHost(
         navController = navHostController,
@@ -31,15 +28,27 @@ fun NavigationGraph(
 
         composable(route = "initial_loading_scene") {
             InitialLoadingScene(
+                edgeToEdgePadding = edgeToEdgePadding,
                 viewModel = provideInitialLoadingViewModel(
                     appDatabase = appDatabase,
                     assetManager = assetManager
-                )
+                ),
+                initialLoadCompleted = {
+                    navHostController.navigate("home_page_scene") {
+                        popUpTo("initial_loading_scene") {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                }
             )
         }
 
         composable(route = "home_page_scene") {
-            HomePageScene(viewModel = provideHomePageViewModel(appDatabase = appDatabase))
+            HomePageScene(
+                edgeToEdgePadding = edgeToEdgePadding,
+                viewModel = provideHomePageViewModel(appDatabase = appDatabase)
+            )
         }
     }
 }
