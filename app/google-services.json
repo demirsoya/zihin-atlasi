@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "109768627695",
+    "project_id": "zihin-atlasi",
+    "storage_bucket": "zihin-atlasi.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:109768627695:android:fd2c2bdc9f22d1d687521a",
+        "android_client_info": {
+          "package_name": "com.epsilon.apps.bilgi.yarismasi.quiz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFUezaF-HXTF8a0opWRGIPhXLcnDKNko4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
