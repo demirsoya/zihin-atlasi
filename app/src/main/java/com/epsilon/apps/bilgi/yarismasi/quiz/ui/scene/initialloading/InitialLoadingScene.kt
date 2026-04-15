@@ -12,12 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.epsilon.apps.bilgi.yarismasi.quiz.R
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.epsiloncomponents.EpsilonText
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.helpers.nonScaledDp
@@ -29,7 +29,7 @@ fun InitialLoadingScene(
     edgeToEdgePadding: PaddingValues,
     initialLoadCompleted: () -> Unit
 ) {
-    val uiState = viewModel.initialLoadingUiState.collectAsState().value
+    val uiState = viewModel.initialLoadingUiState.collectAsStateWithLifecycle().value
 
     LaunchedEffect(uiState) {
         if (uiState is InitialLoadingViewModel.InitialLoadingUiState.Loaded) {

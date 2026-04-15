@@ -1,4 +1,4 @@
-package com.epsilon.apps.bilgi.yarismasi.quiz.ui.scene.initialloading.cases
+package com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases
 
 import android.content.res.AssetManager
 import androidx.room.withTransaction
@@ -8,14 +8,16 @@ import com.epsilon.apps.bilgi.yarismasi.quiz.model.json.QuestionJson
 import com.epsilon.apps.bilgi.yarismasi.quiz.room.AppDatabase
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import kotlinx.coroutines.delay
 
-class LoadQuestionsCase(
+/**
+ * Loads questions from the raw folder into the database.
+ */
+class RawQuestionsCase(
     private val assetManager: AssetManager,
     private val appDatabase: AppDatabase
 ) {
 
-    suspend fun execute(onProgress: (processedQuestions: Int, totalQuestions: Int) -> Unit) {
+    suspend fun loadNewQuestionsToDatabase(onProgress: (processedQuestions: Int, totalQuestions: Int) -> Unit) {
         val rawFiles = assetManager.list("raw").orEmpty()
         val questionSetFiles = rawFiles
             .filter { it.startsWith("question_sets_") && it.endsWith(".json") }
