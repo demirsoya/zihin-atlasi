@@ -1,7 +1,7 @@
 package com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases
 
 import com.epsilon.apps.bilgi.yarismasi.quiz.model.Chapter
-import com.epsilon.apps.bilgi.yarismasi.quiz.model.json.Episode
+import com.epsilon.apps.bilgi.yarismasi.quiz.model.Episode
 
 class EpisodeCase {
 

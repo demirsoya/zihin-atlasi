@@ -57,7 +57,7 @@ fun InitialLoadingScene(
                 textAlign = TextAlign.Center,
                 text = "Yarışma Başlatılıyor",
                 fontWeight = FontWeight.Bold,
-                textColor = R.color.app_two,
+                textColor = R.color.app_main_text_color,
                 size = 22.nonScaledSp
             )
 

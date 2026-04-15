@@ -9,6 +9,8 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.epsilon.apps.bilgi.yarismasi.quiz.room.AppDatabase
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.RawQuestionsCase
+import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.UserCase
+import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.UserProgressCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,13 +28,17 @@ fun provideInitialLoadingViewModel(
             rawQuestionsCase = RawQuestionsCase(
                 assetManager = assetManager,
                 appDatabase = appDatabase
-            )
+            ),
+            userCase = UserCase(appDatabase = appDatabase),
+            userProgressCase = UserProgressCase(appDatabase = appDatabase)
         ) as T
     })
 }
 
 class InitialLoadingViewModel(
-    private val rawQuestionsCase: RawQuestionsCase
+    private val rawQuestionsCase: RawQuestionsCase,
+    private val userCase: UserCase,
+    private val userProgressCase: UserProgressCase
 ) : ViewModel() {
 
     sealed class InitialLoadingUiState {
@@ -55,6 +61,10 @@ class InitialLoadingViewModel(
             runCatching {
                 //TODO Remove delay
                 delay(3000)
+
+                userCase.createUser()
+                userProgressCase.createUserProgress()
+
                 rawQuestionsCase.loadNewQuestionsToDatabase { processedQuestions, totalQuestions ->
                     val progress = if (totalQuestions <= 0) 1f else processedQuestions.toFloat() / totalQuestions.toFloat()
                     mUiState.value = InitialLoadingUiState.Loading(progress = progress.coerceIn(0f, 1f))

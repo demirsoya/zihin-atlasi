@@ -1,0 +1,22 @@
+package com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases
+
+import com.epsilon.apps.bilgi.yarismasi.quiz.model.UserProgress
+import com.epsilon.apps.bilgi.yarismasi.quiz.room.AppDatabase
+
+class UserProgressCase(
+    private val appDatabase: AppDatabase
+) {
+
+    suspend fun createUserProgress() {
+        val existingProgress = appDatabase.accessUserProgress().getUserProgress()
+        if (existingProgress != null) return
+
+        appDatabase.accessUserProgress().insertUserProgress(
+            UserProgress(chapter = 1, episode = 1, level = 1)
+        )
+    }
+
+    suspend fun getUserProgress(): UserProgress {
+        return requireNotNull(appDatabase.accessUserProgress().getUserProgress())
+    }
+}
