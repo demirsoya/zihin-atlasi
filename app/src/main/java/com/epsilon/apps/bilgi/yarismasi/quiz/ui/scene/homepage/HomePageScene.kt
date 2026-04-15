@@ -13,6 +13,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.epsilon.apps.bilgi.yarismasi.quiz.R
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.scene.homepage.content.EpisodesContent
+import com.epsilon.apps.bilgi.yarismasi.quiz.ui.scene.homepage.content.UserContent
 
 @Composable
 fun HomePageScene(viewModel: HomePageViewModel, edgeToEdgePadding: PaddingValues) {
@@ -34,6 +35,9 @@ fun HomePageScene(viewModel: HomePageViewModel, edgeToEdgePadding: PaddingValues
         when (uiState) {
             HomePageViewModel.HomePageUiState.Error -> TODO()
             is HomePageViewModel.HomePageUiState.Loaded -> {
+                item {
+                    UserContent(user = uiState.user)
+                }
                 item {
                     EpisodesContent(episodes = uiState.episodes)
                 }

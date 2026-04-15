@@ -59,9 +59,6 @@ class InitialLoadingViewModel(
     init {
         viewModelScope.launch {
             runCatching {
-                //TODO Remove delay
-                delay(3000)
-
                 userCase.createUser()
                 userProgressCase.createUserProgress()
 
