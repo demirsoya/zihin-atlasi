@@ -11,11 +11,10 @@ import com.epsilon.apps.bilgi.yarismasi.quiz.room.AppDatabase
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.RawQuestionsCase
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.UserCase
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.UserProgressCase
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 @Suppress("UNCHECKED_CAST")
 @Composable
@@ -24,14 +23,15 @@ fun provideInitialLoadingViewModel(
     assetManager: AssetManager
 ): InitialLoadingViewModel {
     return viewModel(factory = object : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T = InitialLoadingViewModel(
-            rawQuestionsCase = RawQuestionsCase(
-                assetManager = assetManager,
-                appDatabase = appDatabase
-            ),
-            userCase = UserCase(appDatabase = appDatabase),
-            userProgressCase = UserProgressCase(appDatabase = appDatabase)
-        ) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T =
+            InitialLoadingViewModel(
+                rawQuestionsCase = RawQuestionsCase(
+                    assetManager = assetManager,
+                    appDatabase = appDatabase
+                ),
+                userCase = UserCase(appDatabase = appDatabase),
+                userProgressCase = UserProgressCase(appDatabase = appDatabase)
+            ) as T
     })
 }
 
@@ -53,7 +53,8 @@ class InitialLoadingViewModel(
         data object Error : InitialLoadingUiState()
     }
 
-    private val mUiState = MutableStateFlow<InitialLoadingUiState>(InitialLoadingUiState.Loading(progress = 0f))
+    private val mUiState =
+        MutableStateFlow<InitialLoadingUiState>(InitialLoadingUiState.Loading(progress = 0f))
     val initialLoadingUiState: StateFlow<InitialLoadingUiState> = mUiState.asStateFlow()
 
     init {
@@ -63,8 +64,10 @@ class InitialLoadingViewModel(
                 userProgressCase.createUserProgress()
 
                 rawQuestionsCase.loadNewQuestionsToDatabase { processedQuestions, totalQuestions ->
-                    val progress = if (totalQuestions <= 0) 1f else processedQuestions.toFloat() / totalQuestions.toFloat()
-                    mUiState.value = InitialLoadingUiState.Loading(progress = progress.coerceIn(0f, 1f))
+                    val progress =
+                        if (totalQuestions <= 0) 1f else processedQuestions.toFloat() / totalQuestions.toFloat()
+                    mUiState.value =
+                        InitialLoadingUiState.Loading(progress = progress.coerceIn(0f, 1f))
                 }
             }.onSuccess {
                 mUiState.value = InitialLoadingUiState.Loaded(progress = 1f)

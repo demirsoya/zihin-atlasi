@@ -16,7 +16,14 @@ import com.epsilon.apps.bilgi.yarismasi.quiz.ui.helpers.nonScaledSp
 
 @Composable
 fun UserContent(user: User) {
-    EpsilonVerticallyCenteredFullWidthRow(color = R.color.app_one) {
+    EpsilonVerticallyCenteredFullWidthRow(
+        color = R.color.app_one,
+        insidePadding = PaddingValues(
+            start = 8.nonScaledDp,
+            bottom = 8.nonScaledDp,
+            end = 8.nonScaledDp
+        )
+    ) {
         EpsilonImage(modifier = Modifier.size(size = 64.dp), imageId = R.drawable.avatar_one)
         EpsilonVerticallyCenteredFullWidthColumn(insidePadding = PaddingValues(all = 4.nonScaledDp)) {
             EpsilonText(text = user.username, size = 16.nonScaledSp)
