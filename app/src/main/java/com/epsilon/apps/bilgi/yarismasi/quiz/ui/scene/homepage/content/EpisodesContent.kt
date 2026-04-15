@@ -8,19 +8,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import com.epsilon.apps.bilgi.yarismasi.quiz.model.Episode
+import com.epsilon.apps.bilgi.yarismasi.quiz.model.UiEpisode
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.epsiloncomponents.EpsilonCard
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.helpers.nonScaledDp
 
 @Composable
-fun EpisodesContent(episodes: List<Episode>) {
+fun EpisodesContent(episodes: List<UiEpisode>) {
     LazyRow(contentPadding = PaddingValues(all = 8.nonScaledDp)) {
-        items(episodes) { episode ->
+        items(episodes) { uiEpisode ->
 
             EpsilonCard(modifier = Modifier.padding(horizontal = 4.nonScaledDp)) {
                 Image(
-                    painter = painterResource(episode.imageId),
-                    contentDescription = episode.episodeName
+                    painter = painterResource(uiEpisode.episode.imageId),
+                    contentDescription = uiEpisode.episode.episodeName
                 )
             }
         }

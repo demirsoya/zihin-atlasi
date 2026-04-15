@@ -5,10 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.epsilon.apps.bilgi.yarismasi.quiz.model.Chapter
-import com.epsilon.apps.bilgi.yarismasi.quiz.model.Episode
+import com.epsilon.apps.bilgi.yarismasi.quiz.model.ChapterEnum
+import com.epsilon.apps.bilgi.yarismasi.quiz.model.UiEpisode
+import com.epsilon.apps.bilgi.yarismasi.quiz.model.User
 import com.epsilon.apps.bilgi.yarismasi.quiz.room.AppDatabase
+import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.ChapterCase
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.EpisodeCase
+import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.UserCase
+import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.UserProgressCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +26,10 @@ fun provideHomePageViewModel(
     return viewModel(factory = object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomePageViewModel(
             appDatabase = appDatabase,
-            episodeCase = EpisodeCase()
+            episodeCase = EpisodeCase(),
+            chapterCase = ChapterCase(),
+            userCase = UserCase(appDatabase = appDatabase),
+            userProgressCase = UserProgressCase(appDatabase = appDatabase)
         ) as T
     })
 }
@@ -30,12 +37,16 @@ fun provideHomePageViewModel(
 class HomePageViewModel(
     private val appDatabase: AppDatabase,
     private val episodeCase: EpisodeCase,
+    private val chapterCase: ChapterCase,
+    private val userCase: UserCase,
+    private val userProgressCase: UserProgressCase,
 ) : ViewModel() {
 
     sealed class HomePageUiState {
         data class Loaded(
-            val chapter: Chapter,
-            val episodes: List<Episode>
+            val user: User,
+            val chapter: ChapterEnum,
+            val episodes: List<UiEpisode>
         ) : HomePageUiState()
 
         data object Loading : HomePageUiState()
@@ -45,11 +56,27 @@ class HomePageViewModel(
     private val mUiState = MutableStateFlow<HomePageUiState>(HomePageUiState.Loading)
     val homePageUiState: StateFlow<HomePageUiState> = mUiState.asStateFlow()
 
-    fun loadHomeScreen() {
+    fun loadHomePage() {
         viewModelScope.launch {
-            //TODO Chapter will be selected from user's progress
-            val episodes = episodeCase.getEpisodes(Chapter.CITIES)
-            mUiState.value = HomePageUiState.Loaded(episodes = episodes, chapter = Chapter.CITIES)
+            runCatching {
+                val user = userCase.getUser()
+                val progress = userProgressCase.getUserProgress()
+                val chapter = chapterCase.getChapterById(progress.chapter)
+                val episodes = episodeCase.applyUserProgress(
+                    episodes = episodeCase.getEpisodes(chapter),
+                    userProgress = progress
+                )
+
+                HomePageUiState.Loaded(
+                    user = user,
+                    chapter = chapter,
+                    episodes = episodes
+                )
+            }.onSuccess { loaded ->
+                mUiState.value = loaded
+            }.onFailure {
+                mUiState.value = HomePageUiState.Error
+            }
         }
     }
 }

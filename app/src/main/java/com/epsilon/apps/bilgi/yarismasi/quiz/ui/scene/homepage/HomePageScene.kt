@@ -21,7 +21,7 @@ fun HomePageScene(viewModel: HomePageViewModel, edgeToEdgePadding: PaddingValues
     val uiState = viewModel.homePageUiState.collectAsStateWithLifecycle().value
 
     LaunchedEffect(context) {
-        viewModel.loadHomeScreen()
+        viewModel.loadHomePage()
     }
 
     LazyColumn(
