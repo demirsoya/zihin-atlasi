@@ -64,10 +64,12 @@ fun EpisodesContent(chapter: ChapterEnum, episodes: List<UiEpisode>) {
     }
 
     EpisodeDialog(
+        uiEpisode = clickedEpisode.value,
         title = clickedEpisode.value?.episode?.episodeName ?: "",
         showDialog = showEpisodeDialog.value,
         onDismiss = {
             showEpisodeDialog.value = false
             clickedEpisode.value = null
-        })
+        }
+    )
 }

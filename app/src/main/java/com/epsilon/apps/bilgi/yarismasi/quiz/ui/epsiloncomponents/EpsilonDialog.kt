@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
@@ -50,7 +50,6 @@ fun EpsilonDialog(
     size: Float = 1f,
     content: @Composable () -> Unit,
 ) {
-    val context = LocalContext.current
     var showAnimatedDialog by remember { mutableStateOf(false) }
     LaunchedEffect(showDialog) {
         if (showDialog) showAnimatedDialog = true
@@ -68,7 +67,7 @@ fun EpsilonDialog(
             )
         ) {
             (LocalView.current.parent as? DialogWindowProvider)?.window?.let { window ->
-                window.setDimAmount(0f)
+                window.setDimAmount(0.56f)
                 window.setWindowAnimations(-1)
             }
 
@@ -80,8 +79,8 @@ fun EpsilonDialog(
                 LaunchedEffect(Unit) { animateIn = true }
                 AnimatedVisibility(
                     visible = animateIn && showDialog,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
+                    enter = fadeIn(animationSpec = tween(durationMillis = 160)),
+                    exit = fadeOut(animationSpec = tween(durationMillis = 120)),
                 ) {
                     Box(
                         modifier = Modifier
@@ -94,7 +93,7 @@ fun EpsilonDialog(
                                     }
                                 }
                             }
-                        //.background(colorResource(id = R.color.black).copy(alpha = .56f))
+                            .background(colorResource(id = R.color.app_black).copy(alpha = .56f))
                     )
                 }
 
@@ -102,11 +101,11 @@ fun EpsilonDialog(
                     visible = animateIn && showDialog,
                     enter = scaleIn(
                         animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessMediumLow
+                            dampingRatio = Spring.DampingRatioNoBouncy,
+                            stiffness = Spring.StiffnessMedium
                         )
                     ),
-                    exit = scaleOut()
+                    exit = scaleOut(animationSpec = tween(durationMillis = 130))
                 ) {
                     Box(
                         modifier = Modifier
@@ -151,7 +150,7 @@ fun EpsilonDialogContainer(title: String? = null, content: @Composable () -> Uni
         title?.let {
             EpsilonText(
                 text = title,
-                textColor = R.color.app_white,
+                textColor = R.color.app_black,
                 size = 16.nonScaledSp,
                 modifier = Modifier
                     .fillMaxWidth()
