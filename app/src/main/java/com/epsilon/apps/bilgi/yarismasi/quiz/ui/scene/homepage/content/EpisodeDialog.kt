@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,13 +43,18 @@ fun EpisodeDialog(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.nonScaledDp),
-                    verticalArrangement = Arrangement.spacedBy(8.nonScaledDp)
+                        .padding(
+                            start = 8.nonScaledDp,
+                            end = 8.nonScaledDp,
+                            top = 8.nonScaledDp,
+                            bottom = 0.nonScaledDp
+                        ),
+                    verticalArrangement = Arrangement.spacedBy(4.nonScaledDp)
                 ) {
                     levelRows.forEach { rowLevels ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.nonScaledDp)
+                            horizontalArrangement = Arrangement.spacedBy(4.nonScaledDp)
                         ) {
                             rowLevels.forEach { levelNumber ->
                                 EpsilonCard(
@@ -69,10 +73,6 @@ fun EpisodeDialog(
                                         )
                                     }
                                 }
-                            }
-
-                            repeat(numberOfItemsInRow - rowLevels.size) {
-                                Spacer(modifier = Modifier.weight(1f))
                             }
                         }
                     }

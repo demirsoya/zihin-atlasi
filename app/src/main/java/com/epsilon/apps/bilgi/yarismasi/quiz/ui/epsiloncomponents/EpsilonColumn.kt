@@ -35,3 +35,27 @@ fun EpsilonVerticallyCenteredFullWidthColumn(
         }
     }
 }
+
+
+@Composable
+fun EpsilonCenteredFullWidthColumn(
+    color: Int = R.color.app_trans,
+    outsidePadding: PaddingValues = PaddingValues(0.nonScaledDp),
+    insidePadding: PaddingValues = PaddingValues(8.nonScaledDp),
+    content: @Composable () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(outsidePadding)
+            .background(color = colorResource(id = color))
+    ) {
+        Column(
+            modifier = Modifier.padding(insidePadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            content()
+        }
+    }
+}

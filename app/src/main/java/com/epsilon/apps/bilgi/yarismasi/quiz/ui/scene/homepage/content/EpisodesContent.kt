@@ -2,6 +2,7 @@ package com.epsilon.apps.bilgi.yarismasi.quiz.ui.scene.homepage.content
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -15,7 +16,9 @@ import androidx.compose.ui.text.font.FontWeight
 import com.epsilon.apps.bilgi.yarismasi.quiz.R
 import com.epsilon.apps.bilgi.yarismasi.quiz.model.ChapterEnum
 import com.epsilon.apps.bilgi.yarismasi.quiz.model.UiEpisode
+import com.epsilon.apps.bilgi.yarismasi.quiz.ui.epsiloncomponents.EpsilonButton
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.epsiloncomponents.EpsilonCard
+import com.epsilon.apps.bilgi.yarismasi.quiz.ui.epsiloncomponents.EpsilonCenteredFullWidthColumn
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.epsiloncomponents.EpsilonImage
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.epsiloncomponents.EpsilonText
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.helpers.nonScaledDp
@@ -40,23 +43,35 @@ fun EpisodesContent(chapter: ChapterEnum, episodes: List<UiEpisode>) {
             EpsilonCard(
                 modifier = Modifier
                     .width(100.nonScaledDp)
-                    .padding(horizontal = 4.nonScaledDp)
-                    .clickable {
+                    .padding(horizontal = 4.nonScaledDp).clickable {
                         clickedEpisode.value = uiEpisode
                     }
             ) {
-                EpsilonImage(
-                    modifier = Modifier.fillMaxWidth(),
-                    imageId = uiEpisode.episode.imageId,
-                    grayedOut = !uiEpisode.isCompleted && !uiEpisode.isActive
-                )
+                EpsilonCenteredFullWidthColumn(insidePadding = PaddingValues(all= 0.nonScaledDp)) {
+                    EpsilonImage(
+                        modifier = Modifier.fillMaxWidth(),
+                        imageId = uiEpisode.episode.imageId,
+                        grayedOut = !uiEpisode.isCompleted && !uiEpisode.isActive
+                    )
 
-                EpsilonText(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = uiEpisode.episode.episodeName,
-                    size = 16.nonScaledSp,
-                    textColor = R.color.app_main_text_color
-                )
+                    EpsilonText(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = uiEpisode.episode.episodeName,
+                        size = 16.nonScaledSp,
+                        textColor = R.color.app_main_text_color
+                    )
+                    Spacer(modifier = Modifier.padding(4.nonScaledDp))
+
+                    EpsilonButton(
+                        text = "Oyna",
+                        modifier = Modifier.fillMaxWidth(0.9f),
+                        textSize = 14.nonScaledSp
+                    ) {
+                        clickedEpisode.value = uiEpisode
+                    }
+
+                    Spacer(modifier = Modifier.padding(2.nonScaledDp))
+                }
             }
         }
     }
