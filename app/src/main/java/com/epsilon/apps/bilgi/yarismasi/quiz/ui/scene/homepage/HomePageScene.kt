@@ -43,7 +43,7 @@ fun HomePageScene(viewModel: HomePageViewModel, edgeToEdgePadding: PaddingValues
         when (uiState) {
             HomePageViewModel.HomePageUiState.Error -> TODO()
             is HomePageViewModel.HomePageUiState.Loaded -> {
-                item {
+                stickyHeader {
                     Spacer(
                         modifier = Modifier
                             .height(
@@ -53,13 +53,11 @@ fun HomePageScene(viewModel: HomePageViewModel, edgeToEdgePadding: PaddingValues
                             .fillMaxWidth()
                             .background(color = colorResource(id = R.color.app_one))
                     )
+                    UserContent(user = uiState.user)
                 }
 
                 item {
-                    UserContent(user = uiState.user)
-                }
-                item {
-                    EpisodesContent(episodes = uiState.episodes)
+                    EpisodesContent(episodes = uiState.episodes, chapter = uiState.chapter)
                 }
             }
 
