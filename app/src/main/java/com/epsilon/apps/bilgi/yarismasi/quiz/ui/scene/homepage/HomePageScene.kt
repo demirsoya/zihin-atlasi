@@ -57,7 +57,11 @@ fun HomePageScene(viewModel: HomePageViewModel, edgeToEdgePadding: PaddingValues
                 }
 
                 item {
-                    EpisodesContent(episodes = uiState.episodes, chapter = uiState.chapter)
+                    EpisodesContent(
+                        episodes = uiState.episodes,
+                        chapter = uiState.chapter,
+                        userProgress = uiState.userProgress
+                    )
                 }
             }
 

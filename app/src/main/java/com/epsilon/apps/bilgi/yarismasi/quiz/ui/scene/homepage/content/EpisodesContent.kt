@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.epsilon.apps.bilgi.yarismasi.quiz.R
 import com.epsilon.apps.bilgi.yarismasi.quiz.model.ChapterEnum
 import com.epsilon.apps.bilgi.yarismasi.quiz.model.UiEpisode
+import com.epsilon.apps.bilgi.yarismasi.quiz.model.UserProgress
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.epsiloncomponents.EpsilonButton
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.epsiloncomponents.EpsilonCard
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.epsiloncomponents.EpsilonCenteredFullWidthColumn
@@ -25,7 +26,11 @@ import com.epsilon.apps.bilgi.yarismasi.quiz.ui.helpers.nonScaledDp
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.helpers.nonScaledSp
 
 @Composable
-fun EpisodesContent(chapter: ChapterEnum, episodes: List<UiEpisode>) {
+fun EpisodesContent(
+    chapter: ChapterEnum,
+    episodes: List<UiEpisode>,
+    userProgress: UserProgress
+) {
 
     val clickedEpisode = remember { mutableStateOf<UiEpisode?>(null) }
 
@@ -46,11 +51,10 @@ fun EpisodesContent(chapter: ChapterEnum, episodes: List<UiEpisode>) {
                     .width(100.nonScaledDp)
                     .padding(horizontal = 4.nonScaledDp)
                     .clickable {
-                        if (uiEpisode.isActive) {
+                        if (uiEpisode.isActive || uiEpisode.isCompleted) {
                             clickedEpisode.value = uiEpisode
                         }
-                    }
-            ) {
+                    }) {
                 EpsilonCenteredFullWidthColumn(insidePadding = PaddingValues(all = 0.nonScaledDp)) {
                     EpsilonImage(
                         modifier = Modifier.fillMaxWidth(),
@@ -70,9 +74,9 @@ fun EpisodesContent(chapter: ChapterEnum, episodes: List<UiEpisode>) {
                         text = "Oyna",
                         modifier = Modifier.fillMaxWidth(0.9f),
                         textSize = 14.nonScaledSp,
-                        iconId = if (!uiEpisode.isCompleted && !uiEpisode.isActive) R.drawable.lock else null
+                        iconId = if (!uiEpisode.isCompleted && !uiEpisode.isActive) R.drawable.lock else if (uiEpisode.isCompleted) R.drawable.completed else null
                     ) {
-                        if (uiEpisode.isActive) {
+                        if (uiEpisode.isActive || uiEpisode.isCompleted) {
                             clickedEpisode.value = uiEpisode
                         }
                     }
@@ -85,6 +89,7 @@ fun EpisodesContent(chapter: ChapterEnum, episodes: List<UiEpisode>) {
 
     EpisodeDialog(
         uiEpisode = clickedEpisode.value,
+        userProgress = userProgress,
         showDialog = clickedEpisode.value != null,
         onDismiss = {
             clickedEpisode.value = null

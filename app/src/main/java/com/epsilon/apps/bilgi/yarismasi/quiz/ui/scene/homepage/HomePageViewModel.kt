@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.epsilon.apps.bilgi.yarismasi.quiz.model.ChapterEnum
 import com.epsilon.apps.bilgi.yarismasi.quiz.model.UiEpisode
 import com.epsilon.apps.bilgi.yarismasi.quiz.model.User
+import com.epsilon.apps.bilgi.yarismasi.quiz.model.UserProgress
 import com.epsilon.apps.bilgi.yarismasi.quiz.room.AppDatabase
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.ChapterCase
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.EpisodeCase
@@ -46,7 +47,8 @@ class HomePageViewModel(
         data class Loaded(
             val user: User,
             val chapter: ChapterEnum,
-            val episodes: List<UiEpisode>
+            val episodes: List<UiEpisode>,
+            val userProgress: UserProgress
         ) : HomePageUiState()
 
         data object Loading : HomePageUiState()
@@ -70,7 +72,8 @@ class HomePageViewModel(
                 HomePageUiState.Loaded(
                     user = user,
                     chapter = chapter,
-                    episodes = episodes
+                    episodes = episodes,
+                    userProgress = progress
                 )
             }.onSuccess { loaded ->
                 mUiState.value = loaded

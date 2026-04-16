@@ -39,7 +39,7 @@ fun EpsilonButton(
     enabled: Boolean = true,
     backgroundColor: Int = R.color.app_three,
     contentPadding: PaddingValues = PaddingValues(
-        horizontal = 8.nonScaledDp,
+        horizontal = 4.nonScaledDp,
         vertical = 4.nonScaledDp
     ),
     iconId: Int? = null,
