@@ -24,7 +24,6 @@ import com.epsilon.apps.bilgi.yarismasi.quiz.ui.helpers.nonScaledSp
 @Composable
 fun EpisodesContent(chapter: ChapterEnum, episodes: List<UiEpisode>) {
 
-    val showEpisodeDialog = remember { mutableStateOf(false) }
     val clickedEpisode = remember { mutableStateOf<UiEpisode?>(null) }
 
     EpsilonText(
@@ -44,7 +43,6 @@ fun EpisodesContent(chapter: ChapterEnum, episodes: List<UiEpisode>) {
                     .padding(horizontal = 4.nonScaledDp)
                     .clickable {
                         clickedEpisode.value = uiEpisode
-                        showEpisodeDialog.value = true
                     }
             ) {
                 EpsilonImage(
@@ -65,10 +63,8 @@ fun EpisodesContent(chapter: ChapterEnum, episodes: List<UiEpisode>) {
 
     EpisodeDialog(
         uiEpisode = clickedEpisode.value,
-        title = clickedEpisode.value?.episode?.episodeName ?: "",
-        showDialog = showEpisodeDialog.value,
+        showDialog = clickedEpisode.value != null,
         onDismiss = {
-            showEpisodeDialog.value = false
             clickedEpisode.value = null
         }
     )

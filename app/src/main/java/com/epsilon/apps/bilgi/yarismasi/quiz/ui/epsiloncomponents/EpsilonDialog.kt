@@ -3,11 +3,11 @@ package com.epsilon.apps.bilgi.yarismasi.quiz.ui.epsiloncomponents
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +41,7 @@ import com.epsilon.apps.bilgi.yarismasi.quiz.R
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.helpers.convexBorder
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.helpers.nonScaledDp
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.helpers.nonScaledSp
+import kotlinx.coroutines.delay
 
 @Composable
 fun EpsilonDialog(
@@ -50,16 +51,40 @@ fun EpsilonDialog(
     size: Float = 1f,
     content: @Composable () -> Unit,
 ) {
+    val dialogExitDurationMillis = 130L
     var showAnimatedDialog by remember { mutableStateOf(false) }
+    var retainedContent by remember { mutableStateOf<(@Composable () -> Unit)?>(null) }
+    var dismissRequestedByUser by remember { mutableStateOf(false) }
+
     LaunchedEffect(showDialog) {
-        if (showDialog) showAnimatedDialog = true
+        if (showDialog) {
+            showAnimatedDialog = true
+            retainedContent = content
+            dismissRequestedByUser = false
+        } else {
+            dismissRequestedByUser = false
+            delay(dialogExitDurationMillis)
+            retainedContent = null
+        }
+    }
+
+    LaunchedEffect(dismissRequestedByUser, showDialog) {
+        if (dismissRequestedByUser && showDialog) {
+            delay(dialogExitDurationMillis)
+            onDismissRequest()
+            dismissRequestedByUser = false
+        }
+    }
+
+    LaunchedEffect(content, showDialog) {
+        if (showDialog) retainedContent = content
     }
 
     if (showAnimatedDialog) {
         Dialog(
             onDismissRequest = {
                 if (canBeDismissed) {
-                    onDismissRequest()
+                    dismissRequestedByUser = true
                 }
             },
             properties = DialogProperties(
@@ -78,7 +103,7 @@ fun EpsilonDialog(
                 var animateIn by remember { mutableStateOf(false) }
                 LaunchedEffect(Unit) { animateIn = true }
                 AnimatedVisibility(
-                    visible = animateIn && showDialog,
+                    visible = animateIn && showDialog && !dismissRequestedByUser,
                     enter = fadeIn(animationSpec = tween(durationMillis = 160)),
                     exit = fadeOut(animationSpec = tween(durationMillis = 120)),
                 ) {
@@ -88,7 +113,7 @@ fun EpsilonDialog(
                             .pointerInput(Unit) {
                                 detectTapGestures {
                                     if (canBeDismissed) {
-                                        onDismissRequest()
+                                        dismissRequestedByUser = true
 
                                     }
                                 }
@@ -98,7 +123,7 @@ fun EpsilonDialog(
                 }
 
                 AnimatedVisibility(
-                    visible = animateIn && showDialog,
+                    visible = animateIn && showDialog && !dismissRequestedByUser,
                     enter = scaleIn(
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioNoBouncy,
@@ -117,7 +142,7 @@ fun EpsilonDialog(
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        content()
+                        (retainedContent ?: content).invoke()
                     }
 
                     DisposableEffect(Unit) {

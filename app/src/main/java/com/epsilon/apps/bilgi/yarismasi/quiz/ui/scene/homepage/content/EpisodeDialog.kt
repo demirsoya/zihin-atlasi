@@ -24,11 +24,9 @@ import com.epsilon.apps.bilgi.yarismasi.quiz.ui.helpers.nonScaledSp
 @Composable
 fun EpisodeDialog(
     uiEpisode: UiEpisode?,
-    title: String,
     showDialog: Boolean,
     onDismiss: () -> Unit
 ) {
-
     EpsilonDialog(
         showDialog = showDialog,
         canBeDismissed = true,
@@ -40,9 +38,9 @@ fun EpisodeDialog(
         uiEpisode?.let {
             val numberOfItemsInRow = 4
             val levelRows =
-                (1..uiEpisode.episode.numberOfLevels).toList().chunked(numberOfItemsInRow)
+                (1..it.episode.numberOfLevels).toList().chunked(numberOfItemsInRow)
 
-            EpsilonDialogContainer(title = title) {
+            EpsilonDialogContainer(title = it.episode.episodeName) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
