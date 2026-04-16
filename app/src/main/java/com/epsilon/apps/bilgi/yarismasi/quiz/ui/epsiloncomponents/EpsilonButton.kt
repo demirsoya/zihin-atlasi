@@ -3,14 +3,10 @@ package com.epsilon.apps.bilgi.yarismasi.quiz.ui.epsiloncomponents
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -49,9 +45,9 @@ fun EpsilonButton(
     iconId: Int? = null,
     iconPosition: EpsilonButtonIconPosition = EpsilonButtonIconPosition.Start,
     iconContentDescription: String? = null,
-    iconSize: Dp = 20.dp,
+    iconSize: Dp = 18.dp,
     iconTint: Int? = null,
-    iconTextSpacing: Dp = 8.nonScaledDp,
+    iconEdgePadding: Dp = 0.nonScaledDp,
     textSize: TextUnit = 20.nonScaledSp,
     textColor: Int = R.color.app_white,
     textAlign: TextAlign = TextAlign.Center,
@@ -69,47 +65,36 @@ fun EpsilonButton(
             .padding(contentPadding),
         contentAlignment = Alignment.Center
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            val icon: (@Composable () -> Unit)? = iconId?.let {
-                {
-                    Image(
-                        modifier = Modifier.size(iconSize),
-                        painter = painterResource(id = it),
-                        contentDescription = iconContentDescription,
-                        colorFilter = iconTint?.let { tint ->
-                            ColorFilter.tint(color = colorResource(id = tint))
-                        }
-                    )
-                }
+        EpsilonText(
+            text = text,
+            size = textSize,
+            textColor = textColor,
+            textAlign = textAlign,
+            fontWeight = fontWeight,
+            lineHeight = lineHeight,
+            textDecoration = textDecoration,
+            fontFamily = fontFamily
+        )
+
+        iconId?.let {
+            val iconModifier = when (iconPosition) {
+                EpsilonButtonIconPosition.Start -> Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = iconEdgePadding)
+
+                EpsilonButtonIconPosition.End -> Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = iconEdgePadding)
             }
 
-            if (iconPosition == EpsilonButtonIconPosition.Start) {
-                icon?.invoke()
-                if (icon != null) {
-                    Spacer(modifier = Modifier.width(iconTextSpacing))
+            Image(
+                modifier = iconModifier.size(iconSize),
+                painter = painterResource(id = it),
+                contentDescription = iconContentDescription,
+                colorFilter = iconTint?.let { tint ->
+                    ColorFilter.tint(color = colorResource(id = tint))
                 }
-            }
-
-            EpsilonText(
-                text = text,
-                size = textSize,
-                textColor = textColor,
-                textAlign = textAlign,
-                fontWeight = fontWeight,
-                lineHeight = lineHeight,
-                textDecoration = textDecoration,
-                fontFamily = fontFamily
             )
-
-            if (iconPosition == EpsilonButtonIconPosition.End) {
-                if (icon != null) {
-                    Spacer(modifier = Modifier.width(iconTextSpacing))
-                }
-                icon?.invoke()
-            }
         }
     }
 }

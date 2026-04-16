@@ -40,14 +40,18 @@ fun EpisodesContent(chapter: ChapterEnum, episodes: List<UiEpisode>) {
     LazyRow(contentPadding = PaddingValues(all = 8.nonScaledDp)) {
         items(episodes) { uiEpisode ->
 
+
             EpsilonCard(
                 modifier = Modifier
                     .width(100.nonScaledDp)
-                    .padding(horizontal = 4.nonScaledDp).clickable {
-                        clickedEpisode.value = uiEpisode
+                    .padding(horizontal = 4.nonScaledDp)
+                    .clickable {
+                        if (uiEpisode.isActive) {
+                            clickedEpisode.value = uiEpisode
+                        }
                     }
             ) {
-                EpsilonCenteredFullWidthColumn(insidePadding = PaddingValues(all= 0.nonScaledDp)) {
+                EpsilonCenteredFullWidthColumn(insidePadding = PaddingValues(all = 0.nonScaledDp)) {
                     EpsilonImage(
                         modifier = Modifier.fillMaxWidth(),
                         imageId = uiEpisode.episode.imageId,
@@ -65,9 +69,12 @@ fun EpisodesContent(chapter: ChapterEnum, episodes: List<UiEpisode>) {
                     EpsilonButton(
                         text = "Oyna",
                         modifier = Modifier.fillMaxWidth(0.9f),
-                        textSize = 14.nonScaledSp
+                        textSize = 14.nonScaledSp,
+                        iconId = if (!uiEpisode.isCompleted && !uiEpisode.isActive) R.drawable.lock else null
                     ) {
-                        clickedEpisode.value = uiEpisode
+                        if (uiEpisode.isActive) {
+                            clickedEpisode.value = uiEpisode
+                        }
                     }
 
                     Spacer(modifier = Modifier.padding(2.nonScaledDp))
