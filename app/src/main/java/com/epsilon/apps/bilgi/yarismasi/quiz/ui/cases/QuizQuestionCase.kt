@@ -10,6 +10,10 @@ class QuizQuestionCase(
     private val appDatabase: AppDatabase
 ) {
 
+    suspend fun markActiveQuestionAsUsed(questionId: String) {
+        appDatabase.accessActiveQuizQuestions().markQuestionAsUsed(questionId)
+    }
+
     suspend fun prepareAndGetActiveQuestions(): List<Question> {
         return appDatabase.withTransaction {
             val activeDao = appDatabase.accessActiveQuizQuestions()

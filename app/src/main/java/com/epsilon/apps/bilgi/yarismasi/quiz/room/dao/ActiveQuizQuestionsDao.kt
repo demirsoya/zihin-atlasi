@@ -18,6 +18,9 @@ interface ActiveQuizQuestionsDao {
     @Query("SELECT * FROM active_quiz_questions ORDER BY difficulty ASC, id ASC")
     suspend fun getQuestionsOrdered(): List<ActiveQuizQuestion>
 
+    @Query("UPDATE active_quiz_questions SET usedBefore = 1 WHERE id = :questionId")
+    suspend fun markQuestionAsUsed(questionId: String)
+
     @Query("DELETE FROM active_quiz_questions")
     suspend fun clear()
 }

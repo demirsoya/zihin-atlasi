@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -35,21 +36,14 @@ import kotlinx.coroutines.delay
 fun QuizContent(
     questionText: String?,
     modifier: Modifier = Modifier,
-    answerOptions: List<String>,
+    optionItems: List<QuizContentOptionUi>,
     isQuestionVisible: Boolean,
     showStartButton: Boolean,
     onStartClick: () -> Unit,
+    onOptionClick: (optionKey: String) -> Unit,
     contentPadding: PaddingValues = PaddingValues(all = 0.nonScaledDp),
 ) {
-    val options = remember(answerOptions) {
-        if (answerOptions.isEmpty()) {
-            emptyList()
-        } else {
-            answerOptions.take(5).let { current ->
-                if (current.size == 5) current else current + List(5 - current.size) { "" }
-            }
-        }
-    }
+    val options = remember(optionItems) { optionItems }
 
     val visibilityStates = remember(options) {
         List(options.size) { mutableStateOf(false) }
@@ -120,7 +114,6 @@ fun QuizContent(
             }
 
             itemsIndexed(options) { index, option ->
-                val optionLabel = ('A' + index).toString()
                 AnimatedVisibility(
                     visible = visibilityStates[index].value,
                     enter =
@@ -135,7 +128,12 @@ fun QuizContent(
                                 )
                 ) {
                     EpsilonCard(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(enabled = option.isClickable) {
+                                onOptionClick(option.key)
+                            },
+                        color = option.indicatorColor
                     ) {
                         Box(
                             modifier = Modifier
@@ -143,10 +141,10 @@ fun QuizContent(
                                 .padding(horizontal = 8.nonScaledDp, vertical = 12.nonScaledDp)
                         ) {
                             EpsilonText(
-                                text = if (option.isBlank()) optionLabel else "$optionLabel. $option",
+                                text = "${option.key}. ${option.text}",
                                 modifier = Modifier.fillMaxWidth(),
                                 size = 16.nonScaledSp,
-                                textColor = R.color.app_main_text_color,
+                                textColor = option.textColor,
                                 textAlign = TextAlign.Start
                             )
                         }

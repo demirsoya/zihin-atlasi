@@ -13,7 +13,8 @@ import com.epsilon.apps.bilgi.yarismasi.quiz.ui.scene.homepage.provideHomePageVi
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.scene.initialloading.InitialLoadingScene
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.scene.initialloading.provideInitialLoadingViewModel
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.scene.quiz.QuizScene
-import com.epsilon.apps.bilgi.yarismasi.quiz.ui.scene.quiz.provideQuizViewModel
+import com.epsilon.apps.bilgi.yarismasi.quiz.ui.scene.quiz.content.provideQuizContentViewModel
+import com.epsilon.apps.bilgi.yarismasi.quiz.ui.scene.quiz.provideStoryModeQuizViewModel
 
 @Composable
 fun NavigationGraph(
@@ -59,7 +60,8 @@ fun NavigationGraph(
         composable(route = "quiz_scene") {
             QuizScene(
                 edgeToEdgePadding = edgeToEdgePadding,
-                viewModel = provideQuizViewModel(appDatabase = appDatabase)
+                viewModel = provideStoryModeQuizViewModel(appDatabase = appDatabase),
+                quizContentViewModel = provideQuizContentViewModel()
             )
         }
     }

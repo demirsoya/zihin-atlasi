@@ -16,19 +16,27 @@ import androidx.compose.ui.res.colorResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.epsilon.apps.bilgi.yarismasi.quiz.R
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.scene.quiz.content.QuizContent
+import com.epsilon.apps.bilgi.yarismasi.quiz.ui.scene.quiz.content.QuizContentViewModel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun QuizScene(
-    viewModel: QuizViewModel,
+    viewModel: StoryModeQuizViewModel,
+    quizContentViewModel: QuizContentViewModel,
     edgeToEdgePadding: PaddingValues
 ) {
     val uiState = viewModel.quizUiState.collectAsStateWithLifecycle().value
+    val optionItems = quizContentViewModel.optionItems.collectAsStateWithLifecycle().value
+    val activeQuestion = (uiState as? StoryModeQuizViewModel.StoryModeQuizUiState.Loaded)?.currentQuestion
     val statusBarTopPadding =
         WindowInsets.statusBarsIgnoringVisibility.asPaddingValues().calculateTopPadding()
 
     LaunchedEffect(viewModel) {
         viewModel.loadQuizIfNeeded()
+    }
+
+    LaunchedEffect(activeQuestion?.id) {
+        quizContentViewModel.bindQuestion(activeQuestion)
     }
 
     Box(
@@ -38,43 +46,52 @@ fun QuizScene(
             .background(color = colorResource(id = R.color.app_white))
     ) {
         when (uiState) {
-            QuizViewModel.QuizUiState.Error -> {
+            StoryModeQuizViewModel.StoryModeQuizUiState.Error -> {
                 QuizContent(
                     questionText = null,
-                    answerOptions = emptyList(),
+                    optionItems = emptyList(),
                     isQuestionVisible = false,
                     showStartButton = false,
                     onStartClick = {},
+                    onOptionClick = {},
                     contentPadding = PaddingValues(top = statusBarTopPadding)
                 )
             }
 
-            QuizViewModel.QuizUiState.Loading -> {
+            StoryModeQuizViewModel.StoryModeQuizUiState.Loading -> {
                 QuizContent(
                     questionText = null,
-                    answerOptions = emptyList(),
+                    optionItems = emptyList(),
                     isQuestionVisible = false,
                     showStartButton = false,
                     onStartClick = {},
+                    onOptionClick = {},
                     contentPadding = PaddingValues(top = statusBarTopPadding)
                 )
             }
 
-            is QuizViewModel.QuizUiState.Loaded -> {
+            is StoryModeQuizViewModel.StoryModeQuizUiState.Loaded -> {
                 val currentQuestion = uiState.currentQuestion
                 QuizContent(
                     questionText = currentQuestion?.questionText,
-                    answerOptions = listOf(
-                        currentQuestion?.optionA.orEmpty(),
-                        currentQuestion?.optionB.orEmpty(),
-                        currentQuestion?.optionC.orEmpty(),
-                        currentQuestion?.optionD.orEmpty(),
-                        currentQuestion?.optionE.orEmpty()
-                    ),
+                    optionItems = optionItems,
                     isQuestionVisible = uiState.isQuestionVisible,
                     showStartButton = !uiState.isQuestionVisible,
                     onStartClick = {
                         viewModel.onStartClicked()
+                    },
+                    onOptionClick = { optionKey ->
+                        if (uiState.isQuestionVisible && !uiState.isCompleted) {
+                            currentQuestion?.let { question ->
+                                val answerResult = quizContentViewModel.onOptionClicked(
+                                    question = question,
+                                    optionKey = optionKey
+                                )
+                                if (answerResult != null) {
+                                    viewModel.onQuizContentAnswered(answerResult)
+                                }
+                            }
+                        }
                     },
                     contentPadding = PaddingValues(top = statusBarTopPadding)
                 )
