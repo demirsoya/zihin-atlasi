@@ -1,6 +1,7 @@
 package com.epsilon.apps.bilgi.yarismasi.quiz.ui.scene.initialloading
 
 import android.content.res.AssetManager
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -11,10 +12,13 @@ import com.epsilon.apps.bilgi.yarismasi.quiz.room.AppDatabase
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.RawQuestionsCase
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.UserCase
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.UserProgressCase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Suppress("UNCHECKED_CAST")
 @Composable
@@ -41,38 +45,40 @@ class InitialLoadingViewModel(
     private val userProgressCase: UserProgressCase
 ) : ViewModel() {
 
+    companion object {
+        private const val TAG = "InitialLoadingVM"
+    }
+
     sealed class InitialLoadingUiState {
-        data class Loaded(
-            val progress: Float
-        ) : InitialLoadingUiState()
+        data object Loaded : InitialLoadingUiState()
 
-        data class Loading(
-            val progress: Float
-        ) : InitialLoadingUiState()
+        data object Loading : InitialLoadingUiState()
 
-        data object Error : InitialLoadingUiState()
+        data class Error(
+            val message: String
+        ) : InitialLoadingUiState()
     }
 
     private val mUiState =
-        MutableStateFlow<InitialLoadingUiState>(InitialLoadingUiState.Loading(progress = 0f))
+        MutableStateFlow<InitialLoadingUiState>(InitialLoadingUiState.Loading)
     val initialLoadingUiState: StateFlow<InitialLoadingUiState> = mUiState.asStateFlow()
 
     init {
         viewModelScope.launch {
+            delay(1500)
             runCatching {
-                userCase.createUser()
-                userProgressCase.createUserProgress()
-
-                rawQuestionsCase.loadNewQuestionsToDatabase { processedQuestions, totalQuestions ->
-                    val progress =
-                        if (totalQuestions <= 0) 1f else processedQuestions.toFloat() / totalQuestions.toFloat()
-                    mUiState.value =
-                        InitialLoadingUiState.Loading(progress = progress.coerceIn(0f, 1f))
+                withContext(Dispatchers.IO) {
+                    userCase.createUser()
+                    userProgressCase.createUserProgress()
+                    rawQuestionsCase.loadNewQuestionsToDatabase()
                 }
             }.onSuccess {
-                mUiState.value = InitialLoadingUiState.Loaded(progress = 1f)
-            }.onFailure {
-                mUiState.value = InitialLoadingUiState.Error
+                mUiState.value = InitialLoadingUiState.Loaded
+            }.onFailure { error ->
+                Log.e(TAG, "Initial loading failed", error)
+                mUiState.value = InitialLoadingUiState.Error(
+                    message = "Yükleme başarısız oldu."
+                )
             }
         }
     }
