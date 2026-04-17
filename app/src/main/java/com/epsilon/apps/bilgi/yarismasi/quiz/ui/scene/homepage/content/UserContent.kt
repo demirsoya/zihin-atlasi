@@ -17,7 +17,7 @@ import com.epsilon.apps.bilgi.yarismasi.quiz.ui.helpers.nonScaledSp
 @Composable
 fun UserContent(user: User) {
     EpsilonVerticallyCenteredFullWidthRow(
-        color = R.color.app_one,
+        color = R.color.app_helper_color,
         insidePadding = PaddingValues(
             start = 8.nonScaledDp,
             bottom = 8.nonScaledDp,

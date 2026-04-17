@@ -163,7 +163,7 @@ fun EpsilonDialogContainer(title: String? = null, content: @Composable () -> Uni
         modifier = Modifier
             .fillMaxWidth(fraction = 0.85f)
             .convexBorder(
-                color = colorResource(R.color.app_one),
+                color = colorResource(R.color.app_helper_color),
                 strokeWidth = 3.nonScaledDp,
                 shape = RoundedCornerShape(4.nonScaledDp)
             ),
@@ -179,7 +179,7 @@ fun EpsilonDialogContainer(title: String? = null, content: @Composable () -> Uni
                 size = 16.nonScaledSp,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(color = colorResource(R.color.app_one))
+                    .background(color = colorResource(R.color.app_helper_color))
                     .padding(
                         end = 4.nonScaledDp,
                         start = 4.nonScaledDp,

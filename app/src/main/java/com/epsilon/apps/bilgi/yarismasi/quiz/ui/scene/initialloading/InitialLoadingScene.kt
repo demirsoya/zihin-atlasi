@@ -65,7 +65,7 @@ fun InitialLoadingScene(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(12.nonScaledDp),
-                color = colorResource(R.color.app_one),
+                color = colorResource(R.color.app_helper_color),
                 trackColor = colorResource(R.color.app_positive_indicator)
             )
         }

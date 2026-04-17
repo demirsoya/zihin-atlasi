@@ -12,7 +12,8 @@
     <color name="app_trans">#00000000</color>
 
     <color name="app_positive_indicator">#90C67F</color>
-    <color name="app_one">#92E4BA</color>
+    <color name="app_helper_color">#92E4BA</color>
     <color name="app_main_text_color">#845763</color>
-    <color name="app_three">#E491A6</color>
+    <color name="app_button_color">#E491A6</color>
+    <color name="app_negative_indicator">#90C67F</color>
 </resources>

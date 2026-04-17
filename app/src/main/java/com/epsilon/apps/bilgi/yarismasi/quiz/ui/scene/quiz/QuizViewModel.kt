@@ -8,10 +8,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.epsilon.apps.bilgi.yarismasi.quiz.model.Question
 import com.epsilon.apps.bilgi.yarismasi.quiz.room.AppDatabase
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.QuizQuestionCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Suppress("UNCHECKED_CAST")
 @Composable
@@ -43,17 +45,28 @@ class QuizViewModel(
     private val mUiState = MutableStateFlow<QuizUiState>(QuizUiState.Loading)
     val quizUiState: StateFlow<QuizUiState> = mUiState.asStateFlow()
 
-    init {
+    private var isLoaded = false
+    private var isLoading = false
+
+    fun loadQuizIfNeeded() {
+        if (isLoaded || isLoading) return
+        isLoading = true
+
         viewModelScope.launch {
             runCatching {
-                quizQuestionCase.prepareAndGetActiveQuestions()
+                withContext(Dispatchers.IO) {
+                    quizQuestionCase.prepareAndGetActiveQuestions()
+                }
             }.onSuccess { questions ->
                 mUiState.value = QuizUiState.Loaded(
                     currentQuestion = questions.firstOrNull { !it.usedBefore } ?: questions.firstOrNull(),
                     isQuestionVisible = false
                 )
+                isLoaded = true
+                isLoading = false
             }.onFailure {
                 mUiState.value = QuizUiState.Error
+                isLoading = false
             }
         }
     }

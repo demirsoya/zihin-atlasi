@@ -56,7 +56,7 @@ fun HomePageScene(
                                     .calculateTopPadding()
                             )
                             .fillMaxWidth()
-                            .background(color = colorResource(id = R.color.app_one))
+                            .background(color = colorResource(id = R.color.app_helper_color))
                     )
                     UserContent(user = uiState.user)
                 }

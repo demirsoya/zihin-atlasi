@@ -79,7 +79,7 @@ fun EpisodeDialog(
                                         .clickable(enabled = isCurrentLevel) {
                                             onActiveLevelClick(it.episode.id, levelNumber)
                                         },
-                                    color = if (isCompletedLevel) R.color.app_one else R.color.app_white
+                                    color = if (isCompletedLevel) R.color.app_helper_color else R.color.app_white
                                 ) {
                                     Box(
                                         modifier = Modifier.fillMaxSize(),

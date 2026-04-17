@@ -37,7 +37,7 @@ fun EpsilonButton(
     text: String,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    backgroundColor: Int = R.color.app_three,
+    backgroundColor: Int = R.color.app_button_color,
     contentPadding: PaddingValues = PaddingValues(
         horizontal = 4.nonScaledDp,
         vertical = 4.nonScaledDp
