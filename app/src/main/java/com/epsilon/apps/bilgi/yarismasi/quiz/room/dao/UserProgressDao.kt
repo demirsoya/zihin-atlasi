@@ -13,4 +13,7 @@ interface UserProgressDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertUserProgress(userProgress: UserProgress)
+
+    @Query("UPDATE user_progress SET chapter = :chapter, episode = :episode, level = :level WHERE id = :id")
+    suspend fun updateUserProgress(id: String, chapter: Int, episode: Int, level: Int)
 }

@@ -19,4 +19,7 @@ interface QuestionsDao {
 
     @Query("UPDATE questions SET usedBefore = 1 WHERE id IN (:questionIds)")
     suspend fun markQuestionsAsUsed(questionIds: List<String>)
+
+    @Query("UPDATE questions SET usedBefore = 0")
+    suspend fun resetAllQuestionsAsUnused()
 }

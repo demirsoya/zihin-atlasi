@@ -1,10 +1,13 @@
 package com.epsilon.apps.bilgi.yarismasi.quiz.ui.scene.quiz.content
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,7 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,18 +47,6 @@ fun QuizContent(
     contentPadding: PaddingValues = PaddingValues(all = 0.nonScaledDp),
 ) {
     val options = remember(optionItems) { optionItems }
-
-    val visibilityStates = remember(options) {
-        List(options.size) { mutableStateOf(false) }
-    }
-
-    LaunchedEffect(options) {
-        visibilityStates.forEach { it.value = false }
-        visibilityStates.forEachIndexed { index, state ->
-            delay(index * 90L)
-            state.value = true
-        }
-    }
 
     var animatedQuestionText by remember { mutableStateOf("") }
     LaunchedEffect(isQuestionVisible, questionText) {
@@ -103,45 +94,46 @@ fun QuizContent(
                         EpsilonText(
                             modifier = Modifier.fillMaxWidth(),
                             text = visibleText,
-                            size = 14.nonScaledSp,
-                            lineHeight = 16.nonScaledSp,
+                            size = 18.nonScaledSp,
+                            lineHeight = 26.nonScaledSp,
                             textColor = R.color.app_main_text_color,
-                            fontWeight = FontWeight.Light,
+                            fontWeight = FontWeight.Normal,
                             textAlign = if (isQuestionVisible) TextAlign.Start else TextAlign.Center
                         )
                     }
                 }
             }
 
-            itemsIndexed(options) { index, option ->
-                AnimatedVisibility(
-                    visible = visibilityStates[index].value,
-                    enter =
-                        fadeIn(animationSpec = tween(durationMillis = 240, delayMillis = 30)) +
-                                scaleIn(
-                                    animationSpec = tween(durationMillis = 260),
-                                    initialScale = 0.96f
-                                ) +
-                                slideInVertically(
-                                    animationSpec = tween(durationMillis = 280),
-                                    initialOffsetY = { it / 3 }
-                                )
+            items(options) { option ->
+                EpsilonCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(enabled = option.isClickable) {
+                            onOptionClick(option.key)
+                        },
+                    color = option.indicatorColor
                 ) {
-                    EpsilonCard(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable(enabled = option.isClickable) {
-                                onOptionClick(option.key)
-                            },
-                        color = option.indicatorColor
+                            .padding(horizontal = 8.nonScaledDp, vertical = 12.nonScaledDp)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 8.nonScaledDp, vertical = 12.nonScaledDp)
-                        ) {
+                        AnimatedContent(
+                            targetState = option.text,
+                            transitionSpec = {
+                                slideInHorizontally(
+                                    animationSpec = tween(durationMillis = 280),
+                                    initialOffsetX = { fullWidth -> fullWidth / 2 }
+                                ) + fadeIn(animationSpec = tween(durationMillis = 220)) togetherWith
+                                    slideOutHorizontally(
+                                        animationSpec = tween(durationMillis = 240),
+                                        targetOffsetX = { fullWidth -> -fullWidth / 2 }
+                                    ) + fadeOut(animationSpec = tween(durationMillis = 180))
+                            },
+                            label = "optionTextTransition"
+                        ) { animatedText ->
                             EpsilonText(
-                                text = "${option.key}. ${option.text}",
+                                text = "${option.key}. $animatedText",
                                 modifier = Modifier.fillMaxWidth(),
                                 size = 16.nonScaledSp,
                                 textColor = option.textColor,

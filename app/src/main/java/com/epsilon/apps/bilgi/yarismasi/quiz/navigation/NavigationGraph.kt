@@ -61,7 +61,13 @@ fun NavigationGraph(
             QuizScene(
                 edgeToEdgePadding = edgeToEdgePadding,
                 viewModel = provideStoryModeQuizViewModel(appDatabase = appDatabase),
-                quizContentViewModel = provideQuizContentViewModel()
+                quizContentViewModel = provideQuizContentViewModel(),
+                onNavigateHome = {
+                    navHostController.navigate("home_page_scene") {
+                        popUpTo("quiz_scene") { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
             )
         }
     }

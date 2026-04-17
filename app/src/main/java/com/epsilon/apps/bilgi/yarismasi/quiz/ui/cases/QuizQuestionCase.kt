@@ -19,9 +19,11 @@ class QuizQuestionCase(
             val activeDao = appDatabase.accessActiveQuizQuestions()
             val questionsDao = appDatabase.accessQuestions()
 
-            if (activeDao.getCount() == 0) {
-                val unusedQuestions = questionsDao.getUnusedQuestions()
-                val selected = selectQuestions(unusedQuestions)
+            val activeCount = activeDao.getCount()
+            val activeUnusedCount = activeDao.getUnusedCount()
+            if (activeCount == 0 || activeUnusedCount == 0) {
+                activeDao.clear()
+                val selected = selectNextActiveQuestions()
                 if (selected.isNotEmpty()) {
                     val sortedByDifficulty = selected.sortedWith(compareBy<Question> { it.difficulty }.thenBy { it.id })
                     val activeQuestions = sortedByDifficulty.map { it.toActiveQuizQuestion() }
@@ -32,6 +34,17 @@ class QuizQuestionCase(
 
             activeDao.getQuestionsOrdered().map { it.toQuestion() }
         }
+    }
+
+    private suspend fun selectNextActiveQuestions(): List<Question> {
+        val questionsDao = appDatabase.accessQuestions()
+        val initialUnused = questionsDao.getUnusedQuestions()
+        val selectedFromUnused = selectQuestions(initialUnused)
+        if (selectedFromUnused.isNotEmpty()) return selectedFromUnused
+
+        questionsDao.resetAllQuestionsAsUnused()
+        val refreshedUnused = questionsDao.getUnusedQuestions()
+        return selectQuestions(refreshedUnused)
     }
 
     private fun selectQuestions(unusedQuestions: List<Question>): List<Question> {

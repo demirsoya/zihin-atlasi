@@ -16,4 +16,5 @@
     <color name="app_main_text_color">#845763</color>
     <color name="app_button_color">#E491A6</color>
     <color name="app_negative_indicator">#E06767</color>
+    <color name="app_disabled_color">#ADABAB</color>
 </resources>

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.epsilon.apps.bilgi.yarismasi.quiz.model.Question
 import com.epsilon.apps.bilgi.yarismasi.quiz.room.AppDatabase
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.QuizQuestionCase
+import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.UserProgressCase
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.scene.quiz.content.QuizContentAnswerResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -25,13 +26,15 @@ fun provideStoryModeQuizViewModel(
     return viewModel(factory = object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
             StoryModeQuizViewModel(
-                quizQuestionCase = QuizQuestionCase(appDatabase = appDatabase)
+                quizQuestionCase = QuizQuestionCase(appDatabase = appDatabase),
+                userProgressCase = UserProgressCase(appDatabase = appDatabase)
             ) as T
     })
 }
 
 class StoryModeQuizViewModel(
-    private val quizQuestionCase: QuizQuestionCase
+    private val quizQuestionCase: QuizQuestionCase,
+    private val userProgressCase: UserProgressCase
 ) : ViewModel() {
 
     companion object {
@@ -44,7 +47,8 @@ class StoryModeQuizViewModel(
             val isQuestionVisible: Boolean,
             val currentQuestionNumber: Int,
             val totalQuestionCount: Int,
-            val isCompleted: Boolean
+            val isCompleted: Boolean,
+            val showLevelCompletedPopup: Boolean
         ) : StoryModeQuizUiState()
 
         data object Loading : StoryModeQuizUiState()
@@ -53,6 +57,9 @@ class StoryModeQuizViewModel(
 
     private val mUiState = MutableStateFlow<StoryModeQuizUiState>(StoryModeQuizUiState.Loading)
     val quizUiState: StateFlow<StoryModeQuizUiState> = mUiState.asStateFlow()
+
+    private val mNavigateToHome = MutableStateFlow(false)
+    val navigateToHome: StateFlow<Boolean> = mNavigateToHome.asStateFlow()
 
     private var isLoaded = false
     private var isLoading = false
@@ -73,10 +80,12 @@ class StoryModeQuizViewModel(
                 }
             }.onSuccess { questions ->
                 storyQuestions = questions.take(MAX_STORY_QUESTIONS)
-                currentQuestionIndex = 0
+                currentQuestionIndex = storyQuestions.indexOfFirst { !it.usedBefore }.let { index ->
+                    if (index >= 0) index else 0
+                }
                 usedQuestionIds.clear()
 
-                val firstQuestion = storyQuestions.firstOrNull()
+                val firstQuestion = storyQuestions.getOrNull(currentQuestionIndex)
                 if (firstQuestion == null) {
                     mUiState.value = StoryModeQuizUiState.Error
                     isLoading = false
@@ -89,7 +98,8 @@ class StoryModeQuizViewModel(
                     isQuestionVisible = false,
                     currentQuestionNumber = currentQuestionIndex + 1,
                     totalQuestionCount = storyQuestions.size,
-                    isCompleted = false
+                    isCompleted = false,
+                    showLevelCompletedPopup = false
                 )
                 isLoaded = true
                 isLoading = false
@@ -119,13 +129,23 @@ class StoryModeQuizViewModel(
             val isLastQuestion = currentQuestionIndex >= storyQuestions.lastIndex
             if (isLastQuestion) {
                 val stateAfterAnswer = mUiState.value as? StoryModeQuizUiState.Loaded ?: return@launch
-                mUiState.value = stateAfterAnswer.copy(isCompleted = true)
+                mUiState.value = stateAfterAnswer.copy(
+                    isCompleted = true,
+                    showLevelCompletedPopup = true
+                )
                 isAnswerTransitionInProgress = false
                 return@launch
             }
 
             currentQuestionIndex += 1
             val nextQuestion = storyQuestions.getOrNull(currentQuestionIndex) ?: run {
+                val stateAfterAnswer = mUiState.value as? StoryModeQuizUiState.Loaded
+                if (stateAfterAnswer != null) {
+                    mUiState.value = stateAfterAnswer.copy(
+                        isCompleted = true,
+                        showLevelCompletedPopup = true
+                    )
+                }
                 isAnswerTransitionInProgress = false
                 return@launch
             }
@@ -135,10 +155,29 @@ class StoryModeQuizViewModel(
                 isQuestionVisible = false,
                 currentQuestionNumber = currentQuestionIndex + 1,
                 totalQuestionCount = storyQuestions.size,
-                isCompleted = false
+                isCompleted = false,
+                showLevelCompletedPopup = false
             )
             isAnswerTransitionInProgress = false
         }
+    }
+
+    fun onLevelCompletedDismissRequested() {
+        val loadedState = mUiState.value as? StoryModeQuizUiState.Loaded ?: return
+        mUiState.value = loadedState.copy(showLevelCompletedPopup = false)
+    }
+
+    fun onLevelCompletedPrimaryAction() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                userProgressCase.advanceToNextLevel()
+            }
+            mNavigateToHome.value = true
+        }
+    }
+
+    fun onNavigateToHomeHandled() {
+        mNavigateToHome.value = false
     }
 
     private suspend fun markQuestionAsUsed(questionId: String) {

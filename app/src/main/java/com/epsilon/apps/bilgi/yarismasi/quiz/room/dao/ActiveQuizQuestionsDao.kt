@@ -12,6 +12,9 @@ interface ActiveQuizQuestionsDao {
     @Query("SELECT COUNT(*) FROM active_quiz_questions")
     suspend fun getCount(): Int
 
+    @Query("SELECT COUNT(*) FROM active_quiz_questions WHERE usedBefore = 0")
+    suspend fun getUnusedCount(): Int
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertQuestions(questions: List<ActiveQuizQuestion>)
 
