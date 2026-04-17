@@ -10,7 +10,7 @@ class QuizQuestionCase(
     private val appDatabase: AppDatabase
 ) {
 
-    suspend fun prepareAndGetActiveQuestions(): List<ActiveQuizQuestion> {
+    suspend fun prepareAndGetActiveQuestions(): List<Question> {
         return appDatabase.withTransaction {
             val activeDao = appDatabase.accessActiveQuizQuestions()
             val questionsDao = appDatabase.accessQuestions()
@@ -26,7 +26,7 @@ class QuizQuestionCase(
                 }
             }
 
-            activeDao.getQuestionsOrdered()
+            activeDao.getQuestionsOrdered().map { it.toQuestion() }
         }
     }
 
@@ -103,6 +103,25 @@ class QuizQuestionCase(
         return ActiveQuizQuestion(
             id = id,
             usedBefore = false,
+            questionText = questionText,
+            optionA = optionA,
+            optionB = optionB,
+            optionC = optionC,
+            optionD = optionD,
+            optionE = optionE,
+            correctAnswer = correctAnswer,
+            difficulty = difficulty,
+            categoryId = categoryId,
+            categoryName = categoryName,
+            infoNote = infoNote,
+            hashtags = hashtags
+        )
+    }
+
+    private fun ActiveQuizQuestion.toQuestion(): Question {
+        return Question(
+            id = id,
+            usedBefore = usedBefore,
             questionText = questionText,
             optionA = optionA,
             optionB = optionB,

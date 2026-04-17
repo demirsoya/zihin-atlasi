@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.epsilon.apps.bilgi.yarismasi.quiz.model.ActiveQuizQuestion
+import com.epsilon.apps.bilgi.yarismasi.quiz.model.Question
 import com.epsilon.apps.bilgi.yarismasi.quiz.room.AppDatabase
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.QuizQuestionCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +32,8 @@ class QuizViewModel(
 
     sealed class QuizUiState {
         data class Loaded(
-            val questions: List<ActiveQuizQuestion>
+            val currentQuestion: Question?,
+            val isQuestionVisible: Boolean
         ) : QuizUiState()
 
         data object Loading : QuizUiState()
@@ -47,10 +48,19 @@ class QuizViewModel(
             runCatching {
                 quizQuestionCase.prepareAndGetActiveQuestions()
             }.onSuccess { questions ->
-                mUiState.value = QuizUiState.Loaded(questions = questions)
+                mUiState.value = QuizUiState.Loaded(
+                    currentQuestion = questions.firstOrNull { !it.usedBefore } ?: questions.firstOrNull(),
+                    isQuestionVisible = false
+                )
             }.onFailure {
                 mUiState.value = QuizUiState.Error
             }
         }
+    }
+
+    fun onStartClicked() {
+        val loadedState = mUiState.value as? QuizUiState.Loaded ?: return
+        if (loadedState.isQuestionVisible) return
+        mUiState.value = loadedState.copy(isQuestionVisible = true)
     }
 }

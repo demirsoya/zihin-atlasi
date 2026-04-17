@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.epsilon.apps.bilgi.yarismasi.quiz.R
+import com.epsilon.apps.bilgi.yarismasi.quiz.ui.scene.quiz.content.QuizContent
 
 @Composable
 fun QuizScene(
@@ -25,9 +26,44 @@ fun QuizScene(
             .background(color = colorResource(id = R.color.app_white))
     ) {
         when (uiState) {
-            QuizViewModel.QuizUiState.Error -> Unit
-            QuizViewModel.QuizUiState.Loading -> Unit
-            is QuizViewModel.QuizUiState.Loaded -> Unit
+            QuizViewModel.QuizUiState.Error -> {
+                QuizContent(
+                    questionText = null,
+                    answerOptions = emptyList(),
+                    isQuestionVisible = false,
+                    showStartButton = false,
+                    onStartClick = {}
+                )
+            }
+
+            QuizViewModel.QuizUiState.Loading -> {
+                QuizContent(
+                    questionText = null,
+                    answerOptions = emptyList(),
+                    isQuestionVisible = false,
+                    showStartButton = false,
+                    onStartClick = {}
+                )
+            }
+
+            is QuizViewModel.QuizUiState.Loaded -> {
+                val currentQuestion = uiState.currentQuestion
+                QuizContent(
+                    questionText = currentQuestion?.questionText,
+                    answerOptions = listOf(
+                        currentQuestion?.optionA.orEmpty(),
+                        currentQuestion?.optionB.orEmpty(),
+                        currentQuestion?.optionC.orEmpty(),
+                        currentQuestion?.optionD.orEmpty(),
+                        currentQuestion?.optionE.orEmpty()
+                    ),
+                    isQuestionVisible = uiState.isQuestionVisible,
+                    showStartButton = !uiState.isQuestionVisible,
+                    onStartClick = {
+                        viewModel.onStartClicked()
+                    }
+                )
+            }
         }
     }
 }

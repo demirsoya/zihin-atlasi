@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "active_quiz_questions")
 data class ActiveQuizQuestion(
     @PrimaryKey(autoGenerate = false) val id: String,
-    val usedBefore: Boolean = true,
+    val usedBefore: Boolean = false,
     val questionText: String,
     val optionA: String,
     val optionB: String,
