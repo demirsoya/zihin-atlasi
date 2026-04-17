@@ -102,7 +102,7 @@ class QuizQuestionCase(
     private fun Question.toActiveQuizQuestion(): ActiveQuizQuestion {
         return ActiveQuizQuestion(
             id = id,
-            usedBefore = true,
+            usedBefore = false,
             questionText = questionText,
             optionA = optionA,
             optionB = optionB,

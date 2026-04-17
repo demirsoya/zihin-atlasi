@@ -96,7 +96,7 @@ fun EpisodesContent(
             clickedEpisode.value = null
         },
         onActiveLevelClick = { episodeId, level ->
-            clickedEpisode.value = null
+            //clickedEpisode.value = null
             onActiveLevelClick(episodeId, level)
         }
     )

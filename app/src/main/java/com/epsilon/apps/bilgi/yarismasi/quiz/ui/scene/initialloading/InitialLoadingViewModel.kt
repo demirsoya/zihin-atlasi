@@ -54,9 +54,7 @@ class InitialLoadingViewModel(
 
         data object Loading : InitialLoadingUiState()
 
-        data class Error(
-            val message: String
-        ) : InitialLoadingUiState()
+        data object Error : InitialLoadingUiState()
     }
 
     private val mUiState =
@@ -76,9 +74,7 @@ class InitialLoadingViewModel(
                 mUiState.value = InitialLoadingUiState.Loaded
             }.onFailure { error ->
                 Log.e(TAG, "Initial loading failed", error)
-                mUiState.value = InitialLoadingUiState.Error(
-                    message = "Yükleme başarısız oldu."
-                )
+                mUiState.value = InitialLoadingUiState.Error
             }
         }
     }

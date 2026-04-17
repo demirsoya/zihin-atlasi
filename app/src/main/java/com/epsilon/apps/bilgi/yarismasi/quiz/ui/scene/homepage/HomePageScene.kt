@@ -45,7 +45,8 @@ fun HomePageScene(
     ) {
 
         when (uiState) {
-            HomePageViewModel.HomePageUiState.Error -> TODO()
+            HomePageViewModel.HomePageUiState.Error -> Unit
+            HomePageViewModel.HomePageUiState.Loading -> Unit
             is HomePageViewModel.HomePageUiState.Loaded -> {
                 stickyHeader {
                     Spacer(
@@ -68,10 +69,6 @@ fun HomePageScene(
                         onActiveLevelClick = onActiveLevelClick
                     )
                 }
-            }
-
-            HomePageViewModel.HomePageUiState.Loading -> {
-
             }
         }
     }

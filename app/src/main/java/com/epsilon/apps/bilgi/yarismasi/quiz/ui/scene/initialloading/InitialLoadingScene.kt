@@ -53,11 +53,7 @@ fun InitialLoadingScene(
             EpsilonText(
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
-                text = if (uiState is InitialLoadingViewModel.InitialLoadingUiState.Error) {
-                    uiState.message
-                } else {
-                    "Yarışma Başlatılıyor"
-                },
+                text = "Yarışma Başlatılıyor",
                 fontWeight = FontWeight.Bold,
                 textColor = R.color.app_main_text_color,
                 size = 22.nonScaledSp
@@ -65,15 +61,13 @@ fun InitialLoadingScene(
 
             Spacer(modifier = Modifier.height(4.nonScaledDp))
 
-            if (uiState !is InitialLoadingViewModel.InitialLoadingUiState.Error) {
-                LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(12.nonScaledDp),
-                    color = colorResource(R.color.app_one),
-                    trackColor = colorResource(R.color.app_positive_indicator)
-                )
-            }
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(12.nonScaledDp),
+                color = colorResource(R.color.app_one),
+                trackColor = colorResource(R.color.app_positive_indicator)
+            )
         }
     }
 }
