@@ -29,7 +29,8 @@ fun EpisodeDialog(
     uiEpisode: UiEpisode?,
     userProgress: UserProgress,
     showDialog: Boolean,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onActiveLevelClick: (episodeId: Int, level: Int) -> Unit
 ) {
     EpsilonDialog(
         showDialog = showDialog,
@@ -75,7 +76,9 @@ fun EpisodeDialog(
                                     modifier = Modifier
                                         .weight(1f)
                                         .aspectRatio(1f)
-                                        .clickable(enabled = isCurrentLevel) { },
+                                        .clickable(enabled = isCurrentLevel) {
+                                            onActiveLevelClick(it.episode.id, levelNumber)
+                                        },
                                     color = if (isCompletedLevel) R.color.app_one else R.color.app_white
                                 ) {
                                     Box(

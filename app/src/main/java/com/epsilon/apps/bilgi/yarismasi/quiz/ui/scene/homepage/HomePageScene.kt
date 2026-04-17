@@ -24,7 +24,11 @@ import com.epsilon.apps.bilgi.yarismasi.quiz.ui.scene.homepage.content.UserConte
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun HomePageScene(viewModel: HomePageViewModel, edgeToEdgePadding: PaddingValues) {
+fun HomePageScene(
+    viewModel: HomePageViewModel,
+    edgeToEdgePadding: PaddingValues,
+    onActiveLevelClick: (episodeId: Int, level: Int) -> Unit
+) {
 
     val context = LocalContext.current
     val uiState = viewModel.homePageUiState.collectAsStateWithLifecycle().value
@@ -60,7 +64,8 @@ fun HomePageScene(viewModel: HomePageViewModel, edgeToEdgePadding: PaddingValues
                     EpisodesContent(
                         episodes = uiState.episodes,
                         chapter = uiState.chapter,
-                        userProgress = uiState.userProgress
+                        userProgress = uiState.userProgress,
+                        onActiveLevelClick = onActiveLevelClick
                     )
                 }
             }

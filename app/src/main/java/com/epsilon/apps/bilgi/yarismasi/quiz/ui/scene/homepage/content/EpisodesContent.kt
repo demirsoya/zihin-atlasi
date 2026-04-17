@@ -29,7 +29,8 @@ import com.epsilon.apps.bilgi.yarismasi.quiz.ui.helpers.nonScaledSp
 fun EpisodesContent(
     chapter: ChapterEnum,
     episodes: List<UiEpisode>,
-    userProgress: UserProgress
+    userProgress: UserProgress,
+    onActiveLevelClick: (episodeId: Int, level: Int) -> Unit
 ) {
 
     val clickedEpisode = remember { mutableStateOf<UiEpisode?>(null) }
@@ -93,6 +94,10 @@ fun EpisodesContent(
         showDialog = clickedEpisode.value != null,
         onDismiss = {
             clickedEpisode.value = null
+        },
+        onActiveLevelClick = { episodeId, level ->
+            clickedEpisode.value = null
+            onActiveLevelClick(episodeId, level)
         }
     )
 }
