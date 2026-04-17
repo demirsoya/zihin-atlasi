@@ -17,4 +17,14 @@
     <color name="app_button_color">#E491A6</color>
     <color name="app_negative_indicator">#E06767</color>
     <color name="app_disabled_color">#ADABAB</color>
+
+
+    <color name="app_history_color">#BC9806</color>
+    <color name="app_art_color">#813A03</color>
+    <color name="app_media_color">#F24170</color>
+    <color name="app_geography_color">#054171</color>
+    <color name="app_sport_color">#F24B05</color>
+    <color name="app_science_color">#08DE08</color>
+
+
 </resources>

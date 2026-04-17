@@ -6,12 +6,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsIgnoringVisibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -40,8 +37,6 @@ fun QuizScene(
     val optionItems = quizContentViewModel.optionItems.collectAsStateWithLifecycle().value
     val activeQuestion = (uiState as? StoryModeQuizViewModel.StoryModeQuizUiState.Loaded)?.currentQuestion
     val shouldNavigateHome = viewModel.navigateToHome.collectAsStateWithLifecycle().value
-    val statusBarTopPadding =
-        WindowInsets.statusBarsIgnoringVisibility.asPaddingValues().calculateTopPadding()
 
     LaunchedEffect(viewModel) {
         viewModel.loadQuizIfNeeded()
@@ -59,7 +54,6 @@ fun QuizScene(
 
     Box(
         modifier = Modifier
-            .padding(edgeToEdgePadding)
             .fillMaxSize()
             .background(color = colorResource(id = R.color.app_white))
     ) {
@@ -67,24 +61,26 @@ fun QuizScene(
             StoryModeQuizViewModel.StoryModeQuizUiState.Error -> {
                 QuizContent(
                     questionText = null,
+                    questionCategory = null,
                     optionItems = emptyList(),
                     isQuestionVisible = false,
                     showStartButton = false,
                     onStartClick = {},
                     onOptionClick = {},
-                    contentPadding = PaddingValues(top = statusBarTopPadding)
+                    contentPadding = edgeToEdgePadding
                 )
             }
 
             StoryModeQuizViewModel.StoryModeQuizUiState.Loading -> {
                 QuizContent(
                     questionText = null,
+                    questionCategory = null,
                     optionItems = emptyList(),
                     isQuestionVisible = false,
                     showStartButton = false,
                     onStartClick = {},
                     onOptionClick = {},
-                    contentPadding = PaddingValues(top = statusBarTopPadding)
+                    contentPadding = edgeToEdgePadding
                 )
             }
 
@@ -92,6 +88,7 @@ fun QuizScene(
                 val currentQuestion = uiState.currentQuestion
                 QuizContent(
                     questionText = currentQuestion?.questionText,
+                    questionCategory = uiState.currentCategory,
                     optionItems = optionItems,
                     isQuestionVisible = uiState.isQuestionVisible,
                     showStartButton = !uiState.isQuestionVisible,
@@ -111,7 +108,7 @@ fun QuizScene(
                             }
                         }
                     },
-                    contentPadding = PaddingValues(top = statusBarTopPadding)
+                    contentPadding = edgeToEdgePadding
                 )
 
                 EpsilonDialog(

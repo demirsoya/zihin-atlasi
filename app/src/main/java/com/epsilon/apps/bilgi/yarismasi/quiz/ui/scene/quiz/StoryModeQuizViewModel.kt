@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.epsilon.apps.bilgi.yarismasi.quiz.model.Question
+import com.epsilon.apps.bilgi.yarismasi.quiz.model.QuestionCategoryEnum
 import com.epsilon.apps.bilgi.yarismasi.quiz.room.AppDatabase
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.QuizQuestionCase
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.cases.UserProgressCase
@@ -44,6 +45,7 @@ class StoryModeQuizViewModel(
     sealed class StoryModeQuizUiState {
         data class Loaded(
             val currentQuestion: Question?,
+            val currentCategory: QuestionCategoryEnum?,
             val isQuestionVisible: Boolean,
             val currentQuestionNumber: Int,
             val totalQuestionCount: Int,
@@ -94,6 +96,7 @@ class StoryModeQuizViewModel(
 
                 mUiState.value = StoryModeQuizUiState.Loaded(
                     currentQuestion = firstQuestion,
+                    currentCategory = resolveCategory(firstQuestion.categoryId),
                     isQuestionVisible = false,
                     currentQuestionNumber = currentQuestionIndex + 1,
                     totalQuestionCount = storyQuestions.size,
@@ -107,6 +110,10 @@ class StoryModeQuizViewModel(
                 isLoading = false
             }
         }
+    }
+
+    private fun resolveCategory(categoryId: Int): QuestionCategoryEnum? {
+        return QuestionCategoryEnum.entries.firstOrNull { it.id == categoryId }
     }
 
     fun onStartClicked() {
@@ -154,6 +161,7 @@ class StoryModeQuizViewModel(
             }
             mUiState.value = StoryModeQuizUiState.Loaded(
                 currentQuestion = nextQuestion,
+                currentCategory = resolveCategory(nextQuestion.categoryId),
                 isQuestionVisible = false,
                 currentQuestionNumber = currentQuestionIndex + 1,
                 totalQuestionCount = storyQuestions.size,
