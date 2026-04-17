@@ -47,6 +47,7 @@ fun QuizContent(
     contentPadding: PaddingValues = PaddingValues(all = 0.nonScaledDp),
 ) {
     val options = remember(optionItems) { optionItems }
+    val placeholderQuestionText = "???"
 
     var animatedQuestionText by remember { mutableStateOf("") }
     LaunchedEffect(isQuestionVisible, questionText) {
@@ -90,16 +91,32 @@ fun QuizContent(
                             .padding(horizontal = 8.nonScaledDp, vertical = 12.nonScaledDp),
                         contentAlignment = Alignment.Center
                     ) {
-                        val visibleText = if (isQuestionVisible) animatedQuestionText else "...?"
-                        EpsilonText(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = visibleText,
-                            size = 18.nonScaledSp,
-                            lineHeight = 26.nonScaledSp,
-                            textColor = R.color.app_main_text_color,
-                            fontWeight = FontWeight.Normal,
-                            textAlign = if (isQuestionVisible) TextAlign.Start else TextAlign.Center
-                        )
+                        val questionTargetText = if (isQuestionVisible) questionText.orEmpty() else "???"
+                        AnimatedContent(
+                            targetState = questionTargetText,
+                            transitionSpec = {
+                                slideInHorizontally(
+                                    animationSpec = tween(durationMillis = 300),
+                                    initialOffsetX = { fullWidth -> fullWidth / 2 }
+                                ) + fadeIn(animationSpec = tween(durationMillis = 230)) togetherWith
+                                    slideOutHorizontally(
+                                        animationSpec = tween(durationMillis = 250),
+                                        targetOffsetX = { fullWidth -> -fullWidth / 2 }
+                                    ) + fadeOut(animationSpec = tween(durationMillis = 190))
+                            },
+                            label = "questionTextTransition"
+                        ) { targetText ->
+                            val visibleText = if (targetText == "???") "???" else animatedQuestionText
+                            EpsilonText(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = visibleText,
+                                size = 18.nonScaledSp,
+                                lineHeight = 26.nonScaledSp,
+                                textColor = R.color.app_main_text_color,
+                                fontWeight = FontWeight.Normal,
+                                textAlign = if (targetText == "???") TextAlign.Center else TextAlign.Start
+                            )
+                        }
                     }
                 }
             }

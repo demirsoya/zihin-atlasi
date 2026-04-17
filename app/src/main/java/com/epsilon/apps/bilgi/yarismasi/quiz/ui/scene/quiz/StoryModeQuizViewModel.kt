@@ -92,7 +92,6 @@ class StoryModeQuizViewModel(
                     return@onSuccess
                 }
 
-                markQuestionAsUsed(firstQuestion.id)
                 mUiState.value = StoryModeQuizUiState.Loaded(
                     currentQuestion = firstQuestion,
                     isQuestionVisible = false,
@@ -112,8 +111,12 @@ class StoryModeQuizViewModel(
 
     fun onStartClicked() {
         val loadedState = mUiState.value as? StoryModeQuizUiState.Loaded ?: return
+        val currentQuestion = loadedState.currentQuestion ?: return
         if (loadedState.isQuestionVisible) return
         mUiState.value = loadedState.copy(isQuestionVisible = true)
+        viewModelScope.launch {
+            markQuestionAsUsed(currentQuestion.id)
+        }
     }
 
     fun onQuizContentAnswered(answerResult: QuizContentAnswerResult) {
@@ -149,7 +152,6 @@ class StoryModeQuizViewModel(
                 isAnswerTransitionInProgress = false
                 return@launch
             }
-            markQuestionAsUsed(nextQuestion.id)
             mUiState.value = StoryModeQuizUiState.Loaded(
                 currentQuestion = nextQuestion,
                 isQuestionVisible = false,
