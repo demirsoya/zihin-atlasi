@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.res.painterResource
@@ -15,6 +16,7 @@ fun EpsilonImage(
     imageId: Int,
     contentDescription: String? = null,
     grayedOut: Boolean = false,
+    tintColor: Color? = null,
 
     ) {
     val matrix =
@@ -24,6 +26,10 @@ fun EpsilonImage(
         modifier = modifier,
         painter = painterResource(id = imageId),
         contentDescription = contentDescription,
-        colorFilter = if (grayedOut) ColorFilter.colorMatrix(matrix.value) else null
+        colorFilter = when {
+            grayedOut -> ColorFilter.colorMatrix(matrix.value)
+            tintColor != null -> ColorFilter.tint(tintColor)
+            else -> null
+        }
     )
 }

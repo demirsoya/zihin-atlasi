@@ -133,7 +133,7 @@ class StoryModeQuizViewModel(
         isAnswerTransitionInProgress = true
 
         viewModelScope.launch {
-            val transitionDelay = if (answerResult.isCorrect) 450L else 450L
+            val transitionDelay = 450L
             delay(transitionDelay)
 
             val isLastQuestion = currentQuestionIndex >= storyQuestions.lastIndex

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.epsilon.apps.bilgi.yarismasi.quiz.R
 import com.epsilon.apps.bilgi.yarismasi.quiz.model.UiEpisode
 import com.epsilon.apps.bilgi.yarismasi.quiz.model.UserProgress
@@ -90,7 +91,7 @@ fun EpisodeDialog(
                                                 modifier = Modifier
                                                     .align(Alignment.TopStart)
                                                     .padding(2.nonScaledDp)
-                                                    .size(10.nonScaledDp),
+                                                    .size(14.dp),
                                                 imageId = if (isCompletedLevel) R.drawable.completed else R.drawable.lock
                                             )
                                         }

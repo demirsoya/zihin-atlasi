@@ -9,5 +9,6 @@ data class QuizContentOptionUi(
 )
 
 data class QuizContentAnswerResult(
-    val isCorrect: Boolean
+    val isCorrect: Boolean?,
+    val remainingSeconds: Int
 )

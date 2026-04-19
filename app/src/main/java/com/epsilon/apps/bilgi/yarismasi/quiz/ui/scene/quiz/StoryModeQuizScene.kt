@@ -10,11 +10,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.epsilon.apps.bilgi.yarismasi.quiz.R
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.epsiloncomponents.EpsilonButton
 import com.epsilon.apps.bilgi.yarismasi.quiz.ui.epsiloncomponents.EpsilonDialog
@@ -35,11 +41,20 @@ fun QuizScene(
 ) {
     val uiState = viewModel.quizUiState.collectAsStateWithLifecycle().value
     val optionItems = quizContentViewModel.optionItems.collectAsStateWithLifecycle().value
+    val remainingSeconds = quizContentViewModel.remainingSeconds.collectAsStateWithLifecycle().value
     val activeQuestion = (uiState as? StoryModeQuizViewModel.StoryModeQuizUiState.Loaded)?.currentQuestion
     val shouldNavigateHome = viewModel.navigateToHome.collectAsStateWithLifecycle().value
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val latestUiState by rememberUpdatedState(uiState)
 
     LaunchedEffect(viewModel) {
         viewModel.loadQuizIfNeeded()
+    }
+
+    LaunchedEffect(quizContentViewModel) {
+        quizContentViewModel.answerResults.collect { result ->
+            viewModel.onQuizContentAnswered(result)
+        }
     }
 
     LaunchedEffect(activeQuestion?.id) {
@@ -52,6 +67,21 @@ fun QuizScene(
         viewModel.onNavigateToHomeHandled()
     }
 
+    DisposableEffect(lifecycleOwner, quizContentViewModel) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_STOP) {
+                val loadedState = latestUiState as? StoryModeQuizViewModel.StoryModeQuizUiState.Loaded
+                if (loadedState != null && loadedState.isQuestionVisible && !loadedState.isCompleted) {
+                    quizContentViewModel.onScreenExitedWithoutAnswer()
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -62,6 +92,7 @@ fun QuizScene(
                 QuizContent(
                     questionText = null,
                     questionCategory = null,
+                    remainingSeconds = remainingSeconds,
                     optionItems = emptyList(),
                     isQuestionVisible = false,
                     showStartButton = false,
@@ -75,6 +106,7 @@ fun QuizScene(
                 QuizContent(
                     questionText = null,
                     questionCategory = null,
+                    remainingSeconds = remainingSeconds,
                     optionItems = emptyList(),
                     isQuestionVisible = false,
                     showStartButton = false,
@@ -89,22 +121,23 @@ fun QuizScene(
                 QuizContent(
                     questionText = currentQuestion?.questionText,
                     questionCategory = uiState.currentCategory,
+                    remainingSeconds = remainingSeconds,
                     optionItems = optionItems,
                     isQuestionVisible = uiState.isQuestionVisible,
                     showStartButton = !uiState.isQuestionVisible,
                     onStartClick = {
                         viewModel.onStartClicked()
+                        currentQuestion?.let { question ->
+                            quizContentViewModel.onQuestionStarted(question)
+                        }
                     },
                     onOptionClick = { optionKey ->
                         if (uiState.isQuestionVisible && !uiState.isCompleted) {
                             currentQuestion?.let { question ->
-                                val answerResult = quizContentViewModel.onOptionClicked(
+                                quizContentViewModel.onOptionClicked(
                                     question = question,
                                     optionKey = optionKey
                                 )
-                                if (answerResult != null) {
-                                    viewModel.onQuizContentAnswered(answerResult)
-                                }
                             }
                         }
                     },

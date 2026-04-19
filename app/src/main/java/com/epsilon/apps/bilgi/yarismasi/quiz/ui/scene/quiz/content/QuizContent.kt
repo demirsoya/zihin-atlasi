@@ -52,6 +52,7 @@ import kotlinx.coroutines.delay
 fun QuizContent(
     questionText: String?,
     questionCategory: QuestionCategoryEnum?,
+    remainingSeconds: Int,
     modifier: Modifier = Modifier,
     optionItems: List<QuizContentOptionUi>,
     isQuestionVisible: Boolean,
@@ -114,9 +115,12 @@ fun QuizContent(
                         .height(36.nonScaledDp)
                         .background(color = animatedHeaderColor)
                 ) {
-                    questionCategory?.let {
-                        EpsilonText(text = it.categoryName, textColor = R.color.app_white)
-                    }
+                    QuizTimerContent(
+                        remainingSeconds = remainingSeconds,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(end = 8.nonScaledDp, bottom = 8.nonScaledDp)
+                    )
                 }
             }
 
